@@ -32,6 +32,25 @@ func lock() {
 	}
 }
 
+func TestLockExpire(t *testing.T) {
+	conn, err := redis.Dial("tcp", "localhost:6379")
+	if err != nil {
+		log.Println("redis connection error: ", err)
+		return
+	}
+
+	defer conn.Close()
+
+	// l := New(conn, "abc", 1.1, 100)
+	l := New(conn, "abc", 102, 100)
+	if ok, err := l.TryLock(); ok {
+		log.Println("lock success")
+		l.Unlock()
+	} else {
+		log.Println("lock fail,err: ", err)
+	}
+}
+
 // TestRedisLock 测试枷锁操作
 func TestRedisLock(t *testing.T) {
 	lock()
